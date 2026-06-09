@@ -1,8 +1,8 @@
 """
 Hospital Management System
 Entity
-- Patient
-- Doctor
+- Patient     (pid,pname,page,pgender,pcontact,problem)
+- Doctor      (did,dname,dspec,active)
 - Appointment
 
 1- Add Patient Information
@@ -35,6 +35,82 @@ def addPatient():
     file.close()
     print("\n\t\tPatient Added Successfully!")
 
+# A METHOD TO VIEW ALL PATIENTS
+def viewAllPatients():
+    file = open('patient.bin','rb')
+    try:
+        while True:
+            data = pickle.load(file)
+            for pid,info in data.items():
+                print("\n\tPatient ID :",pid)
+                print("\tPatient Name :",info[0])
+                print("\tPatient Age :",info[1])
+                print("\tPatient Gender :",info[2])
+                print("\tPatient Contact :",info[3])
+                print("\tPatient's Problem :",info[4])
+                print("\t-----------------------------------")
+    except:
+        print("\n\tHere is your all patients")
+    file.close()
+
+# A METHOD TO GET PATIENT INFORMATION
+def getAllPatients():
+    file = open('patient.bin','rb')
+    pat = dict()
+    try:
+        while True:
+            pat.update(pickle.load(file))
+    except:
+        pass
+    file.close()
+    return pat
+
+# A METHOD TO UPDATE PATIENT's INFORMATIOn
+def updatePatient():
+    pid = input("\n\tEnter Patient ID To Update Info : ")
+    pat = getAllPatients()
+    res = pat.get(pid,False)
+    if res:
+        print("\tCustomer Name :",res[0])
+        print("\tCustomer Age :",res[1])
+        print("\tCustomer Gender :",res[2])
+        print("\tOld Contact Number :",res[3])
+        cont = input("\tEnter New Contact : ")
+        print("\tOld Patient Problem :",res[4])
+        prob = input("\tEnter New Problem if Any : ")
+        pat.update({pid:[res[0],res[1],res[2],cont,prob]})
+        file = open('patient.bin','wb')
+        for pid,info in pat.items():
+            pickle.dump({pid:info},file)
+        file.close()
+        print("\tPatient Updated Successfully!")
+    else:
+        print("\tNo Patient Found on this ID")
+
+# A METHOD TO DELETE A PATIENT
+def deletePatient():
+    pid = input("\n\tEnter Patient ID To Delete : ")
+    pat = getAllPatients()
+    res = pat.get(pid,False)
+    if res:
+        print("\tPatient Name :",res[0])
+        print("\tPatient Age :",res[1])
+        print("\tPatient Gender :",res[2])
+        print("\tPatient Contact :",res[3])
+        print("\tPatient's Problem :",res[4])
+        ch = input("\n\tDo You Want To Delete(Y/n) :")
+        if ch in "Yy":
+            pat.pop(pid)
+            file = open('patient.bin','wb')
+            for pid,info in pat.items():
+                pickle.dump({pid:info},file)
+            file.close()
+            print("\tPatient Deleted Successfully!")
+        else:
+            print("\tPatient's Information Not Deleted!")
+    else:
+        print("\n\tPatient Not Found!")
+
 # DASHBOARD
 while True:
     print("\n\t\tHospital Management System")
@@ -56,4 +132,13 @@ while True:
     elif ch==1:
         addPatient()
         input("\n\t\tPress Enter To Continue...")
-
+    elif ch==2:
+        viewAllPatients()
+        input("\n\t\tPress Enter To Continue...")
+    elif ch==3:
+        updatePatient()
+        input("\n\t\tPress Enter To Continue...")
+    elif ch==4:
+        deletePatient()
+        input("\n\t\tPress Enter To Continue...")
+        
